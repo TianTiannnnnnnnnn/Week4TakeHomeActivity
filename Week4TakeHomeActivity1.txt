@@ -1,0 +1,197 @@
+import React, { useState } from 'react';
+import {
+  View,
+  FlatList,
+  StyleSheet,
+  Text,
+  StatusBar,
+  TouchableOpacity,
+} from 'react-native';
+import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
+
+// Utility function to generate a random color
+const getRandomColor = () => {
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+};
+
+const Morning = [
+  { id: '1', title: 'Good Morning! Start Fresh', color: getRandomColor() },
+  { id: '2', title: 'Stretch your Body', color: getRandomColor() },
+  { id: '3', title: 'Hydrate with a Glass of Water', color: getRandomColor() },
+  { id: '4', title: 'Freshen Up', color: getRandomColor() },
+  { id: '5', title: 'Enjoy a Healthy Breakfast', color: getRandomColor() },
+  { id: '6', title: 'Plan Your Day Ahead', color: getRandomColor() },
+  { id: '7', title: 'Respond to Important Messages', color: getRandomColor() },
+  { id: '8', title: 'Attend Morning Meetings', color: getRandomColor() },
+  { id: '9', title: 'Focus on Key Tasks', color: getRandomColor() },
+  { id: '10', title: 'Prepare for the Day', color: getRandomColor() },
+];
+
+const Afternoon = [
+  { id: '1', title: 'Lunch Time! Relax', color: getRandomColor() },
+  { id: '2', title: 'Go for a Walk', color: getRandomColor() },
+  { id: '3', title: 'Check Emails and Messages', color: getRandomColor() },
+  { id: '4', title: 'Continue Working on Your Projects', color: getRandomColor() },
+  { id: '5', title: 'Review the Agenda for the Day', color: getRandomColor() },
+  { id: '6', title: 'Take a Short Break', color: getRandomColor() },
+  { id: '7', title: 'Back to Work/Study', color: getRandomColor() },
+  { id: '8', title: 'Wrap up for the Day', color: getRandomColor() },
+  { id: '9', title: 'Prepare for Evening Relaxation', color: getRandomColor() },
+  { id: '10', title: 'Reach out to Loved Ones', color: getRandomColor() },
+];
+
+const Evening = [
+  { id: '1', title: 'Dinner Time', color: getRandomColor() },
+  { id: '2', title: 'Relax and Unwind', color: getRandomColor() },
+  { id: '3', title: 'Do Some Light Exercise', color: getRandomColor() },
+  { id: '4', title: 'Plan for Tomorrow', color: getRandomColor() },
+  { id: '5', title: 'Disconnect from Screens', color: getRandomColor() },
+];
+
+const CustomRadioButton = ({ isSelected, onSelect }) => (
+  <TouchableOpacity onPress={onSelect} style={styles.radioButtonContainer}>
+    <View style={[styles.radioButton, isSelected && styles.selectedRadioButton]} />
+  </TouchableOpacity>
+);
+
+const Item = ({ title, color, isSelected, onSelect }) => (
+  <View style={[styles.item, { backgroundColor: color }]}>
+    <TouchableOpacity onPress={onSelect}>
+      <Text style={styles.title}>{title}</Text>
+    </TouchableOpacity>
+    <CustomRadioButton isSelected={isSelected} onSelect={onSelect} />
+  </View>
+);
+
+const App = () => {
+  const [selectedItems, setSelectedItems] = useState([]);
+
+  const handleSelect = (title) => {
+    setSelectedItems((prevSelectedItems) => {
+      if (prevSelectedItems.includes(title)) {
+        // Remove from selected list
+        return prevSelectedItems.filter((item) => item !== title);
+      } else {
+        // Add to selected list
+        return [...prevSelectedItems, title];
+      }
+    });
+  };
+
+  const getNotSelectedCount = () => {
+    // Combine all data arrays into one array
+    const totalItems = [...Morning, ...Afternoon, ...Evening];
+    return totalItems.length - selectedItems.length;
+  };
+
+  return (
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.textStyle}>Morning</Text>
+        <FlatList
+          data={Morning}
+          renderItem={({ item }) => (
+            <Item
+              title={item.title}
+              color={item.color}
+              isSelected={selectedItems.includes(item.title)}
+              onSelect={() => handleSelect(item.title)}
+            />
+          )}
+          keyExtractor={(item) => item.id}
+        />
+
+        <Text style={styles.textStyle}>Afternoon</Text>
+        <FlatList
+          data={Afternoon}
+          renderItem={({ item }) => (
+            <Item
+              title={item.title}
+              color={item.color}
+              isSelected={selectedItems.includes(item.title)}
+              onSelect={() => handleSelect(item.title)}
+            />
+          )}
+          keyExtractor={(item) => item.id}
+        />
+
+        <Text style={styles.textStyle}>Evening</Text>
+        <FlatList
+          data={Evening}
+          renderItem={({ item }) => (
+            <Item
+              title={item.title}
+              color={item.color}
+              isSelected={selectedItems.includes(item.title)}
+              onSelect={() => handleSelect(item.title)}
+            />
+          )}
+          keyExtractor={(item) => item.id}
+        />
+
+        <Text style={styles.selectedCount}>
+          Selected Count: {selectedItems.length}
+        </Text>
+        <Text style={styles.selectedCount}>
+          Not Selected Count: {getNotSelectedCount()}
+        </Text>
+      </SafeAreaView>
+    </SafeAreaProvider>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: StatusBar.currentHeight || 0,
+  },
+  textStyle: {
+    fontSize: 20,
+    textAlign: 'center',
+    marginVertical: 10,
+  },
+  item: {
+    backgroundColor: '#f9c2ff',
+    padding: 20,
+    marginVertical: 8,
+    marginHorizontal: 16,
+    borderRadius: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  title: {
+    fontSize: 18,
+    flex: 1,
+  },
+  radioButtonContainer: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#3674B5',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  radioButton: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: 'transparent',
+  },
+  selectedRadioButton: {
+    backgroundColor: '#3674B5',
+  },
+  selectedCount: {
+    textAlign: 'center',
+    fontSize: 18,
+    marginTop: 20,
+  },
+});
+
+export default App;
